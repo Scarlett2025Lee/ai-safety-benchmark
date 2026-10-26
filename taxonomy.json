@@ -1,0 +1,78 @@
+{
+  "version": "1.0",
+  "languages": ["en", "zh"],
+  "severity_levels": [
+    {"id": "S0", "name": "allow", "action": "no_action"},
+    {"id": "S1", "name": "restrict", "action": "age_gate_or_derecommend"},
+    {"id": "S2", "name": "remove", "action": "take_down"},
+    {"id": "S3", "name": "escalate", "action": "take_down_and_priority_human_review"}
+  ],
+  "categories": [
+    {
+      "id": "HAR",
+      "name": "harassment_bullying",
+      "signals": ["identifiable_target", "private_vs_public_figure", "degrade_vs_critique_intent", "reciprocal_context"],
+      "rules": [
+        {"severity": "S3", "condition": "credible_threat_of_violence AND identifiable_person"},
+        {"severity": "S2", "condition": "(direct_insult OR degradation OR sexual_harassment) AND identifiable_private_individual"},
+        {"severity": "S2", "condition": "coordinated_pile_on_call OR malicious_personal_info_disclosure"},
+        {"severity": "S1", "condition": "mockery_of_public_figure_beyond_public_role OR untargeted_taunting OR ambiguous_hostility"},
+        {"severity": "S0", "condition": "self_deprecation OR mutual_banter OR critique_of_public_conduct OR condemnation_quoting_harassment"}
+      ]
+    },
+    {
+      "id": "DAN",
+      "name": "dangerous_acts_challenges",
+      "signals": ["imitability", "instruction_vs_depiction", "injury_severity", "minor_audience", "safety_framing"],
+      "rules": [
+        {"severity": "S3", "condition": "encourages_imminent_minor_participation AND lethal_risk"},
+        {"severity": "S2", "condition": "(instructional OR encouraging) AND imitable AND serious_injury_risk"},
+        {"severity": "S2", "condition": "promotes_named_dangerous_challenge"},
+        {"severity": "S1", "condition": "professional_stunt AND no_safety_framing"},
+        {"severity": "S1", "condition": "non_instructional_depiction AND moderate_risk"},
+        {"severity": "S0", "condition": "professional_context_with_safety_framing OR news_reporting OR warning_psa"}
+      ]
+    },
+    {
+      "id": "HAT",
+      "name": "hate_speech",
+      "signals": ["protected_attribute", "dehumanization_vs_criticism", "speaker_position", "coded_language"],
+      "rules": [
+        {"severity": "S3", "condition": "incites_violence AND protected_group_target"},
+        {"severity": "S2", "condition": "(dehumanization OR pejorative_slur OR inferiority_claim OR hateful_stereotype_as_fact) AND protected_attribute_target"},
+        {"severity": "S1", "condition": "negative_generalization_short_of_dehumanization OR ambiguous_coded_language"},
+        {"severity": "S0", "condition": "reclaimed_ingroup_usage OR academic_or_news_discussion OR condemnation_quoting_content"}
+      ]
+    },
+    {
+      "id": "MIN",
+      "name": "minor_safety_nonsexual",
+      "signals": ["minor_subject_or_audience", "depiction_vs_normalization_vs_encouragement", "identifiability", "imminence"],
+      "rules": [
+        {"severity": "S3", "condition": "evidence_of_ongoing_abuse OR imminent_danger_to_identifiable_minor OR adult_soliciting_private_contact_with_minor"},
+        {"severity": "S2", "condition": "depicts_or_normalizes_abuse_or_neglect OR encourages_minor_dangerous_activity OR bullying_identifiable_minor"},
+        {"severity": "S1", "condition": "minor_in_mild_risk_without_adult_framing OR social_pressure_content_targeting_teens"},
+        {"severity": "S0", "condition": "parenting_or_educational_discussion OR protected_identity_news_reporting"}
+      ]
+    },
+    {
+      "id": "MIS",
+      "name": "health_misinformation",
+      "signals": ["verifiably_false_vs_unproven", "fact_vs_opinion_framing", "actionable_harm", "authority_impersonation"],
+      "rules": [
+        {"severity": "S3", "condition": "urges_discontinuing_critical_treatment AND imminent_context"},
+        {"severity": "S2", "condition": "verifiably_false_medical_claim AND concrete_harm_potential"},
+        {"severity": "S2", "condition": "impersonates_medical_authority"},
+        {"severity": "S1", "condition": "unproven_wellness_claim OR misleading_framing_of_real_research"},
+        {"severity": "S0", "condition": "clearly_framed_personal_anecdote OR debunking_content OR genuine_scientific_uncertainty_discussion"}
+      ]
+    }
+  ],
+  "global_rules": [
+    {"id": "R-CONTEXT", "rule": "protective_framing_must_be_evident_in_content_itself"},
+    {"id": "R-QUOTE", "rule": "quoted_content_inherits_quoting_intent"},
+    {"id": "R-MULTI", "rule": "label_equals_highest_severity_record_all_categories"},
+    {"id": "R-LANG", "rule": "evasion_via_euphemism_homophone_or_obfuscation_does_not_reduce_severity"},
+    {"id": "R-DOUBT", "rule": "unresolved_adjacent_tier_tie_goes_to_lower_tier_with_boundary_flag"}
+  ]
+}
